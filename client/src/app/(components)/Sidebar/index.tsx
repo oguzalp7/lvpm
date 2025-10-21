@@ -1,6 +1,23 @@
 "use client"
 
-import { LockIcon, Icon, Home, Briefcase, Search, Settings, Users, User, X } from 'lucide-react';
+import {
+  AlertCircle,
+  AlertOctagon,
+  AlertTriangle,
+  Briefcase,
+  ChevronDown,
+  ChevronUp,
+  Home,
+  Layers3,
+  LockIcon,
+  LucideIcon,
+  Search,
+  Settings,
+  ShieldAlert,
+  User,
+  Users,
+  X,
+} from "lucide-react";
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { use, useState } from 'react'
@@ -15,6 +32,7 @@ const Sidebar = () => {
     // fetch from redux store
     const dispatch = useAppDispatch();
     const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
+    const language = useAppSelector((state) => state.global.language);
 
     const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white ${isSidebarCollapsed ? 'w-0 hidden' : 'w-64'}`;
     return (
@@ -46,19 +64,60 @@ const Sidebar = () => {
                         </h3>
                         <div className="mt-1 flex items-start gap-2">
                         <LockIcon className="mt-[0.1rem] h-3 w-3 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs text-gray-500">Private</p>
+                        <p className="text-xs text-gray-500">{language === 'en' ? 'Private' : 'Özel'}</p>
                         </div>
                     </div>
                 </div>
                 {/* SIDEBAR LINKS */}
                 <nav className='z-10 w-full'>
-                    <SidebarLink href="/" icon={Home} label="Home" isCollapsed={false} />
-                    <SidebarLink href="/timeline" icon={Briefcase} label="Timeline" isCollapsed={false} />
-                    <SidebarLink href="/search" icon={Search} label="Search" isCollapsed={false} />
-                    <SidebarLink href="/settings" icon={Settings} label="Settings" isCollapsed={false} />
-                    <SidebarLink href="/users" icon={User} label="Users" isCollapsed={false} />
-                    <SidebarLink href="/teams" icon={Users} label="Teams" isCollapsed={false} />
+                    <SidebarLink href="/" icon={Home} label={language === 'en' ? 'Home' : 'Ana Sayfa'} isCollapsed={false} />
+                    <SidebarLink href="/timeline" icon={Briefcase} label={language === 'en' ? 'Timeline' : 'Zaman Çizelgesi'} isCollapsed={false} />
+                    <SidebarLink href="/search" icon={Search} label={language === 'en' ? 'Search' : 'Ara'} isCollapsed={false} />
+                    <SidebarLink href="/settings" icon={Settings} label={language === 'en' ? 'Settings' : 'Ayarlar'} isCollapsed={false} />
+                    <SidebarLink href="/users" icon={User} label={language === 'en' ? 'Users' : 'Kullanıcılar'} isCollapsed={false} />
+                    <SidebarLink href="/teams" icon={Users} label={language === 'en' ? 'Teams' : 'Takımlar'} isCollapsed={false} />
                 </nav>
+
+                <button onClick={() => setShowProjects( (prev) => !prev)} className='flex w-full items-center justify-between px-8 py-3 text-gray-500'>
+                    <span className='font-medium'>{language === 'en' ? 'Projects' : 'Projeler'}</span>
+                    {showProjects ? ( <ChevronUp className='h-5 w-5' /> ): ( <ChevronDown className='h-5 w-5' /> )}
+                </button>
+                {/* PROJECT LIST */}
+
+                {/* PRIORITIES LIST */}
+                <button onClick={() => setShowPriority( (prev) => !prev)} className='flex w-full items-center justify-between px-8 py-3 text-gray-500'>
+                    <span className='font-medium'>{language === 'en' ? 'Priorities' : 'Öncelikler'}</span>
+                    {showPriority ? ( <ChevronUp className='h-5 w-5' /> ): ( <ChevronDown className='h-5 w-5' /> )}
+                </button>
+                    {showPriority && (
+                        <>
+                            <SidebarLink
+                            icon={AlertCircle}
+                            label={language === 'en' ? 'Urgent' : 'Acil'}
+                            href="/priority/urgent"
+                            isCollapsed={false}
+                            />
+                            <SidebarLink
+                            icon={ShieldAlert}
+                            label={language === 'en' ? 'High' : 'Yüksek'}
+                            href="/priority/high"
+                            isCollapsed={false}
+                            />
+                            <SidebarLink
+                            icon={AlertTriangle}
+                            label={language === 'en' ? 'Medium' : 'Orta'}
+                            href="/priority/medium"
+                            isCollapsed={false}
+                            />
+                            <SidebarLink icon={AlertOctagon} label={language === 'en' ? 'Low' : 'Düşük'} href="/priority/low" isCollapsed={false} />
+                            <SidebarLink
+                            icon={Layers3}
+                            label={language === 'en' ? 'Backlog' : 'Beklemede'}
+                            href="/priority/backlog"
+                            isCollapsed={false}
+                            />
+                        </>
+                    )}
             </div>
         </div>
     )
@@ -79,10 +138,6 @@ const SidebarLink = ({
 } : SidebarLinkProps) => {
     const pathName = usePathname();
     const isActive = pathName === href || (pathName === "/" && href === "/dashboard");
-    const screenWidth = window.innerWidth;
-    
-    const dispatch = useAppDispatch();
-    const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
 
     return (
         <Link href={href} className="w-full">

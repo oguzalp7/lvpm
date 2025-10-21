@@ -14,8 +14,7 @@ const DashboardLayout = ({children}: Props) => {
   // fetch from redux store
   const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
   const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
-  console.log("isDarkMode:", isDarkMode);
-  console.log(document.documentElement.classList);
+  
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
